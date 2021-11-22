@@ -39,5 +39,13 @@ group_title.send_keys(grp_name + Keys.ENTER)
 #clicked on group name header
 head_title= findbyxpath("/html[1]/body[1]/div[1]/div[1]/div[1]/div[4]/div[1]/header[1]/div[2]/div[1]/div[1]/span[1]")
 
+time.sleep(2)
 
+page_s=driver.page_source
+soup = bs( page_s , 'html.parser')
+
+a= soup.find( class_ =  "body")
+#"emoji-texttt _ccCW FqYAR i0jNr"
+for i in a:
+    print(a.string)
 
