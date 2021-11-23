@@ -11,14 +11,13 @@ options = webdriver.ChromeOptions()
 options.add_argument(r"user-data-dir=T:\Whatsapp_Group_Tag_All\Data")
 
 
-# grp_name = input("\nEnter Group Name :\n")
-grp_name=input("\nEnter Group Name\n")
+grp_name = input("\nEnter Group Name\n")
 
 
 #loading web driver
 driver = webdriver.Chrome(executable_path=r'./chromedriver.exe',options=options)
 wait = WebDriverWait(driver, 20)
-driver.maximize_window()
+# driver.maximize_window()
 driver.get('https://web.whatsapp.com/')
 
 
@@ -32,8 +31,7 @@ def findbyxpath_noclick(x):
     return wait.until(EC.presence_of_element_located((By.XPATH, x)))
 
 #click search box
-group_title = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, "//div[@class='_13NKt copyable-text selectable-text']")))
-group_title.click()
+group_title = findbyxpath("//div[@class='_13NKt copyable-text selectable-text']")
 
 #type in group name and select it
 group_title.send_keys(grp_name + Keys.ENTER) 
@@ -41,37 +39,39 @@ group_title.send_keys(grp_name + Keys.ENTER)
 #clicked on group name header
 head_title= findbyxpath("/html[1]/body[1]/div[1]/div[1]/div[1]/div[4]/div[1]/header[1]/div[2]/div[1]/div[1]/span[1]")
 
-
 #view all
 view_all=findbyxpath("/html[1]/body[1]/div[1]/div[1]/div[1]/div[2]/div[3]/span[1]/div[1]/span[1]/div[1]/div[1]/section[1]/div[6]/div[1]/div[1]/div[1]/div[1]/span[1]")
 
-time.sleep(2)
+#click on search box
+search_box=findbyxpath("//div[@class='nBIOd tm2tP copyable-area']//div//div[@class='_13NKt copyable-text selectable-text']")
 
-#parse page with beautifulsoup
-page_s=driver.page_source
-soup = bs( page_s , 'html.parser')
+l=[]
+search_box.send_keys(Keys.DOWN)
+# click_search.send_keys(Keys.UP)
 
-#add all the names to set such that there are no repititions
-l=set()
-
-for i in soup.find_all(class_="_3Bc7H KPJpj"):
-    for j in i.find_all(class_="emoji-texttt _ccCW FqYAR i0jNr"): 
-        l.add(j.text)
-
+while('You' not in l):
+    # t=click_search
+    click_search=driver.switch_to.active_element
+    l.append(str(click_search.text).split("\n")[0])
+    click_search.send_keys(Keys.DOWN)
+    
 l.remove("You")
 
 with open('a.txt','w',encoding="utf-8") as f:
     for i in l:
         f.write(i+"\n")
+        
 f.close()
-
 
 #cross button
 cross_button=findbyxpath("/html[1]/body[1]/div[1]/div[1]/span[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/header[1]/div[1]/div[1]/button[1]")
 
-#messagebox
-type_box=findbyxpath("//div[@class='_1UWac _1LbR4']//div[@class='_13NKt copyable-text selectable-text']")
+# messagebox
+type_box=findbyxpath("/html[1]/body[1]/div[1]/div[1]/div[1]/div[4]/div[1]/footer[1]/div[1]/div[1]/span[2]/div[1]/div[2]/div[1]/div[1]/div[2]")
 for i in l:
     type_box.send_keys("@"+ i + Keys.ENTER)
 type_box.send_keys(Keys.ENTER) 
 
+#close window
+time.sleep(2)
+driver.quit()
