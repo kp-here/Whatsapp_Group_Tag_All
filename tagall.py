@@ -6,15 +6,17 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 import time
 
-#hello
-# grp_name = input("\nEnter Group Name :\n")
-grp_name="kozhikoood"
+#caching cookies so that QR code scanning needs to be done only once
+options = webdriver.ChromeOptions()
+options.add_argument(r"user-data-dir=T:\Whatsapp_Group_Tag_All\Data")
 
-#importing contact names
+
+# grp_name = input("\nEnter Group Name :\n")
+grp_name=input("\nEnter Group Name\n")
 
 
 #loading web driver
-driver = webdriver.Chrome(executable_path=r'T:\Whatsapp Automation\chromedriver.exe')
+driver = webdriver.Chrome(executable_path=r'./chromedriver.exe',options=options)
 wait = WebDriverWait(driver, 20)
 driver.maximize_window()
 driver.get('https://web.whatsapp.com/')
@@ -41,45 +43,35 @@ head_title= findbyxpath("/html[1]/body[1]/div[1]/div[1]/div[1]/div[4]/div[1]/hea
 
 
 #view all
-try:
-    view_all= WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH,"/html[1]/body[1]/div[1]/div[1]/div[1]/div[2]/div[3]/span[1]/div[1]/span[1]/div[1]/div[1]/section[1]/div[6]/div[2]/button[1]/div[2]")))
-except:
-    print("error occured")
-else:
-    view_all.click()
-finally:
-    time.sleep(2)
-    page_s=driver.page_source
-    soup = bs( page_s , 'html.parser')
+view_all=findbyxpath("/html[1]/body[1]/div[1]/div[1]/div[1]/div[2]/div[3]/span[1]/div[1]/span[1]/div[1]/div[1]/section[1]/div[6]/div[1]/div[1]/div[1]/div[1]/span[1]")
 
-    l=set()
+time.sleep(2)
 
-    for i in soup.find_all(class_="_3Bc7H KPJpj"):
-        for j in i.find_all(class_="emoji-texttt _ccCW FqYAR i0jNr"): 
-            l.add(j.text)
-    
-    l.remove("You")
-    k=list(l)
+#parse page with beautifulsoup
+page_s=driver.page_source
+soup = bs( page_s , 'html.parser')
 
-    with open('a.txt','w',encoding="utf-8") as f:
-        for i in k:
-            f.write(i+"\n")
-    f.close()
+#add all the names to set such that there are no repititions
+l=set()
+
+for i in soup.find_all(class_="_3Bc7H KPJpj"):
+    for j in i.find_all(class_="emoji-texttt _ccCW FqYAR i0jNr"): 
+        l.add(j.text)
+
+l.remove("You")
+
+with open('a.txt','w',encoding="utf-8") as f:
+    for i in l:
+        f.write(i+"\n")
+f.close()
 
 
-    try:
-        #cross button
-        cross_button=WebDriverWait(driver, 2).until(EC.presence_of_element_located((By.XPATH,"/html[1]/body[1]/div[1]/div[1]/span[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/header[1]/div[1]/div[1]/button[1]")))
-        
-    except:
-        print("error occured")
-    else:
-        cross_button.click()
-        
-    finally:
-        #messagebox
-        type_box=findbyxpath("//div[@class='_1UWac _1LbR4']//div[@class='_13NKt copyable-text selectable-text']")
-        for i in k:
-            type_box.send_keys("@"+ i + Keys.ENTER)
-        type_box.send_keys(Keys.ENTER) 
+#cross button
+cross_button=findbyxpath("/html[1]/body[1]/div[1]/div[1]/span[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/header[1]/div[1]/div[1]/button[1]")
+
+#messagebox
+type_box=findbyxpath("//div[@class='_1UWac _1LbR4']//div[@class='_13NKt copyable-text selectable-text']")
+for i in l:
+    type_box.send_keys("@"+ i + Keys.ENTER)
+type_box.send_keys(Keys.ENTER) 
 
