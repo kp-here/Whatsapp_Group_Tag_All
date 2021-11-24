@@ -1,5 +1,4 @@
 from selenium import webdriver
-from bs4 import BeautifulSoup as bs
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
@@ -8,7 +7,11 @@ import time
 
 #caching cookies so that QR code scanning needs to be done only once
 options = webdriver.ChromeOptions()
-options.add_argument(r"user-data-dir=T:\Whatsapp_Group_Tag_All\Data")
+
+#Add your Data folder location similar to the format specified. Note that Data folder should be anywhere outside the working directory. Else, program may crash.
+
+# options.add_argument(r"user-data-dir=T:\Whatsapp_Group_Tag_All\Data")
+options.add_argument(r"user-data-dir=Add_your_Data_Folder_Location_Here")
 
 
 grp_name = input("\nEnter Group Name\n")
